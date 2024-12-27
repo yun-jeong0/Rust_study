@@ -253,3 +253,24 @@ println!과 똑같은 방식으로 작동하지만, 출력하지않고 String을
 ---
 
 # 8-3. hash map
+
+`HashMap<K, V>` 타입은 `K 타입의 "키"`에 `V 타입의 "값"`을 매핑한 것을 저장
+
+이 매핑은 당연히 hashing function을 통해 동작한다, hashing function은 이 키와 값을 메모리 어디에 저장할지 결정한다.
+
+벡터를 이용하듯 인덱스를 사용하는 것이 아닌, 임의의 타입으로 된 키를 이용하여 데이터를 찾는다
+
+&nbsp;
+
+### 새로운 HashMap 생성하기
+
+`new`: 생성, `insert`: 요소추가
+
+```rust
+use std::collections::HashMap;
+
+let mut scores = HashMap::new();
+
+scores.insert(String::from("Blue"),10);
+scores.insert(String::from("Yellow"),50);
+```
