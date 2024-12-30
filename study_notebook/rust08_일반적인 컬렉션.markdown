@@ -274,3 +274,130 @@ let mut scores = HashMap::new();
 scores.insert(String::from("Blue"),10);
 scores.insert(String::from("Yellow"),50);
 ```
+
+튜플의 벡터에 대해 collect 메소드를 사용하는 방법
+
+`collect` : 데이터를 모아서 HashMap을 포함한 여러 컬렉션 타입으로 만들어준다.
+
+각각 분리된 벡터에 데이터를 가지고있다면 zip 메소드를 이용하여 둘이 한쌍이 되도록 할 수 있다.
+
+```rust
+use std::collections::HashMap;
+
+let teams = vec![String::from("Blue"),String::from("Yellow")];
+let initial_scores = vec![10,50];
+
+let scores: HashMap<_,_> = teams.iter().zip(initial_scores.iter()).collect();
+// 키와 값의 키와 값의 타입에 대한 타입 파라미터에 대해서는 밑줄을 쓸 수 있으며
+// 러스트는 벡터에 담긴 데이터의 타입에 기초하여 해쉬에 담길 타입을 추론할 수 있다.
+```
+
+&nbsp;
+
+### HashMap과 소유권
+
+String과 같이 소유된 값들에 대해서는, 값들이 이동되어 해쉬맵이 그 값들에 대한 소유자가 될 것이다.
+
+```rust
+use std::collections::HashMap;
+
+let field_name = String::from("Favorite color");
+let field_value = String::from("Blue");
+
+let mut map = HashMap::new();
+map insert(field_name, field_value);
+```
+
+`insert`를 호출하여 `field_name`과 `field_value`를 해쉬맵으로 이동시킨 후에는 더 이상 이 둘을 사용할 수 없다.
+
+만약 해쉬맵에 값들의 참조자들을 삽입한다면, 이 값들은 해쉬맵으로 이동되지 않음. 하지만 참조자가 가리키고 있는 값은 해쉬맵이 유효할 때 까지 계속 유효해야한다.
+
+&nbsp;
+
+### HashMap 내의 값 접근하기
+
+`get` : 값 접근하기
+
+```rust
+use std::collections::HashMap;
+
+let mut scores = HashMap::new();
+
+scores.insert(String::from("Blue"),10);
+scores.insert(String::from("Yellow"),50);
+
+let team_name = String::from("Blue");
+let score = scores.get(&team_name);
+```
+
+socre는 블루팀과 연관된 값을 가지고 있을거고, 결과값은 some(&10) 일 것이다. 결과값은 `Option<&T>`를 반환하기 때문에 Some으로 감싸져있다
+만일 해쉬맵 내에 해당 키에 대한 값이 없다면 get은 None을 반환한다. 이때는 Option처리를 해야할것.
+
+for루프를 이용하여 각각의 키/값 쌍에 대한 반복작업 가능
+
+```rust
+use std::collections::HashMap;
+
+let mut scores = HashMap::new();
+
+scores.insert(String::from("Blue"),10);
+scores.insert(String::from("Yellow"),50);
+
+for (key, value) in &scores {
+    println!("{}: {}", key, value);
+}
+```
+
+&nbsp;
+
+### HashMap 갱신하기
+
+- #### 값을 덮어쓰기
+  해쉬맵에 키와 값을 삽입하고, 그 후 똑같은 키에 다른값을 삽입하면 새값으로 대체된다.
+
+```rust
+use std::collections::HashMap;
+
+let mut scores = HashMap::new();
+
+scores.insert(String::from("Blue"),10);
+scores.insert(String::from("Blue"),25); // 10을 대체
+```
+
+- #### 키에 할당된 값이 없을 경우에만 삽입하기
+
+`entry` : 해당키가 있는지 없는지 확인, `or_insert` : 해당키가 존재할경우 값반환, 그렇지 않을겨우 새 값 삽입.
+
+```rust
+use std::collections::HashMap;
+
+let mut scores = HashMap::new();
+scores.insert(String::from("Blue"),10);
+
+scores.entry(String::from("Yellow")).or_insert(50);
+// entry().or_insert()메서드는 값에 대한 가변 참조(&mut V)를 반환
+scores.entry(String::from("Blue")).or_insert(50);
+
+println!("{:?}", scores);
+// {"Yellow": 50, "Blue": 10}
+```
+
+- #### 예전 값을 기초로 값을 갱신하기
+
+어떤 텍스트 내에서 각 단어가 몇번나왔는지 세는 코드
+
+```rust
+use std::collections::HashMap;
+
+let text = "hello world wonderful world";
+
+let mut map = HashMap::new();
+
+for word in text.split_whitespace() {
+    let count = map.entry(word).or_insert(0);
+    *count += 1; // 값을 할당하기 위해 *를 사용하여 count를 역참조해야한다.
+}
+
+println!("{:?}", map);
+// {"hello": 1, "world": 2, "wonderful": 1}
+```
