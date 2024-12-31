@@ -21,7 +21,7 @@ $ cargo build
 $ ./target/debug/cargo_test
 ```
 
-- `argo build`나 `cargo check`를 활용하여 프로젝트를 빌드할 수 있다
+- `cargo build`나 `cargo check`를 활용하여 프로젝트를 빌드할 수 있다
 - `cargo run`으로 프로젝트를 빌드하고 실행할 수 있다.
 - 동일한 디렉토리에 빌드의 결과물이 저장되는 대신, cargo는 `target/debug` 디렉토리에 저장한다.
 
